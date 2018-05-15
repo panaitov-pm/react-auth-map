@@ -1,8 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './components/App';
+import {BrowserRouter} from 'react-router-dom';
+import Root from './components/common/Root';
+import configureStore from './configureStore';
 import registerServiceWorker from './registerServiceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import 'semantic-ui-css/semantic.min.css';
+import './index.scss';
+
+const store = configureStore();
+
+ReactDOM.render(
+	<BrowserRouter>
+		<Root store={store} />
+	</BrowserRouter>,
+	document.getElementById('root'));
 registerServiceWorker();

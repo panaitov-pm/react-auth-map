@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+a {
+  color :inherit;
+  &:hover {
+    color:inherit;
+  }
+}
+.active {
+  color :red;
+}
