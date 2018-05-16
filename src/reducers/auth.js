@@ -10,6 +10,10 @@ export default (state = defaultState, action) => {
 	const {type, payload} = action;
 
 	switch (type) {
+		case C.USER_SIGN_IN + C.START_LOAD:
+			return {...state, isLoading: true};
+		case C.USER_SIGN_IN + C.FINISH_LOAD:
+			return {...state, profile: {...state.profile, uid: payload}, isAuth: true, isLoading: false};
 		case C.USER_SIGN_UP + C.START_LOAD:
 			return {...state, isLoading: true};
 		case C.USER_SIGN_UP + C.FINISH_LOAD:
@@ -19,3 +23,4 @@ export default (state = defaultState, action) => {
 			return state;
 	}
 }
+
