@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {Button, Form, Grid, Transition, Label} from 'semantic-ui-react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
+import {userSignUp} from '../../AC';
 
 class SignUp extends Component {
 	state = {
@@ -15,6 +16,10 @@ class SignUp extends Component {
 		errors: {},
 		visible  : false
 	};
+
+	componentWillReceiveProps(nextProps) {
+		this.setState({errors: nextProps.errors});
+	}
 
 	componentDidMount() {
 		this.setState({visible: true});
@@ -32,6 +37,10 @@ class SignUp extends Component {
 
 	handleSubmit = (e) => {
 		e.preventDefault();
+
+		const {userSignUp} = this.props;
+		const {data} = this.state;
+		userSignUp(data.email, data.password);
 	};
 
 	render() {
@@ -80,10 +89,17 @@ class SignUp extends Component {
 }
 
 SignUp.propTypes = {
+	userSignUp: PropTypes.func.isRequired,
+	errors: PropTypes.object,
 };
 
 SignUp.defaultProps = {
+	userSignUp: () => {},
+	errors: {},
 };
 
 
-export default SignUp;
+export default connect(
+	({errors}) => ({errors}),
+	{userSignUp}
+)(SignUp);

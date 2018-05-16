@@ -4,8 +4,8 @@ import {Route, Switch} from 'react-router-dom';
 import Navigation from '../layout/Navigation';
 import Main from '../pages/Main';
 import Profile from '../pages/Profile';
-import SignIn from '../Autorization/SignIn';
-import SignUp from '../Autorization/SignUp';
+import SignIn from '../autorization/SignIn';
+import SignUp from '../autorization/SignUp';
 import Page404 from '../pages/Page404';
 
 import './App.scss';
