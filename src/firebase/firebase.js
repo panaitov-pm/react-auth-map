@@ -25,7 +25,9 @@ const config = process.env.NODE_ENV === 'production'
 firebase.initializeApp(config);
 
 const auth = firebase.auth();
+const db = firebase.database();
 
 export {
 	auth,
+	db,
 }

@@ -4,6 +4,8 @@ import {Button, Form, Grid, Transition, Label} from 'semantic-ui-react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {userSignUp} from '../../AC';
+import InlineError from '../layout/errorMessage';
+
 
 class SignUp extends Component {
 	state = {
@@ -18,7 +20,9 @@ class SignUp extends Component {
 	};
 
 	componentWillReceiveProps(nextProps) {
-		this.setState({errors: nextProps.errors});
+		this.setState({
+			errors: {...nextProps.errors}
+		});
 	}
 
 	componentDidMount() {
@@ -32,19 +36,35 @@ class SignUp extends Component {
 
 	handleChange = ({target}) => this.setState(({data, errors}) => ({
 		data: {...data, [target.name]: target.value},
-		errors: {...errors, [target.name]: ''},
+		errors: {...errors, message: ''},
 	}));
 
 	handleSubmit = (e) => {
 		e.preventDefault();
-
-		const {userSignUp} = this.props;
-		const {data} = this.state;
-		userSignUp(data.email, data.password);
+		const {userSignUp, history} = this.props;
+		const {data, errors} = this.state;
+		if(data.password !== data.password2) {
+			this.setState({
+				errors: {...errors, message: 'Password and Confirm password are not the same'},
+			});
+			return;
+		}
+		if(data.name.trim() === '') {
+			this.setState({
+				errors: {...errors, message: 'Name field is empty'},
+			});
+			return;
+		}
+		userSignUp(data.name, data.email, data.password, history);
+		this.setState({
+			errors: {...errors, message: ''},
+		});
 	};
 
 	render() {
 		const {visible, data, errors} = this.state;
+		const {isLoading} = this.props;
+
 		return (
 			<Grid centered
 			      columns={2}>
@@ -80,7 +100,8 @@ class SignUp extends Component {
 								</Form.Field>
 							}
 						</Transition.Group>
-						<Button type="submit" primary>Sing Up</Button>
+						<Button type="submit" primary loading={isLoading} disabled={isLoading}>Sing Up</Button>
+						{!!errors && <InlineError text={errors.message} />}
 					</Form>
 				</Grid.Column>
 			</Grid>
@@ -90,16 +111,21 @@ class SignUp extends Component {
 
 SignUp.propTypes = {
 	userSignUp: PropTypes.func.isRequired,
-	errors: PropTypes.object,
+	errors: PropTypes.object.isRequired,
+	isLoading: PropTypes.bool.isRequired,
 };
 
 SignUp.defaultProps = {
 	userSignUp: () => {},
 	errors: {},
+	isLoading: false,
 };
 
 
 export default connect(
-	({errors}) => ({errors}),
+	({auth, errors}) => ({
+		isLoading: auth.isLoading,
+		errors: errors,
+	}),
 	{userSignUp}
-)(SignUp);
+)(withRouter(SignUp));
