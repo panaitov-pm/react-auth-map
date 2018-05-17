@@ -27,6 +27,8 @@ class SignUp extends Component {
 
 	componentDidMount() {
 		this.setState({visible: true});
+		const {isAuth, history} = this.props;
+		isAuth && history.push('/profile');
 	}
 
 	componentWillUnmount() {
@@ -113,17 +115,20 @@ SignUp.propTypes = {
 	userSignUp: PropTypes.func.isRequired,
 	errors: PropTypes.object.isRequired,
 	isLoading: PropTypes.bool.isRequired,
+	isAuth: PropTypes.bool.isRequired,
 };
 
 SignUp.defaultProps = {
 	userSignUp: () => {},
 	errors: {},
 	isLoading: false,
+	isAuth: false,
 };
 
 
 export default connect(
 	({auth, errors}) => ({
+		isAuth: auth.isAuth,
 		isLoading: auth.isLoading,
 		errors: errors,
 	}),

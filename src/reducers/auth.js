@@ -19,6 +19,10 @@ export default (state = defaultState, action) => {
 		case C.USER_SIGN_UP + C.FINISH_LOAD:
 		case C.GET_ERRORS:
 			return {...state, isLoading: false};
+		case C.USER_SIGN_OUT + C.START_LOAD:
+			return {...state, isLoading: true};
+		case C.USER_SIGN_OUT + C.FINISH_LOAD:
+			return {...state, profile: {...state.profile, uid: ''}, isAuth: false, isLoading: false};
 		default:
 			return state;
 	}

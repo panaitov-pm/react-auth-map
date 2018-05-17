@@ -55,3 +55,22 @@ export const setCurrentUser = (uid) => dispatch => {
 		payload: uid
 	});
 };
+
+export const signOut = (history) => dispatch => {
+	dispatch({
+		type: C.USER_SIGN_OUT + C.START_LOAD
+	});
+	auth.signOut().then(() => {
+		dispatch({
+			type: C.USER_SIGN_OUT + C.FINISH_LOAD
+		});
+		localStorage.removeItem('userId');
+		history.push('/sign-in');
+	}).catch(err => {
+		dispatch({
+			type   : C.GET_ERRORS,
+			payload: err
+		});
+	})
+
+};
