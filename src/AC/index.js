@@ -49,13 +49,6 @@ export const userSignIn = (email, password, history) => dispatch => {
 		})
 };
 
-export const setCurrentUser = (uid) => dispatch => {
-	dispatch({
-		type: C.USER_SIGN_IN + C.FINISH_LOAD,
-		payload: uid
-	});
-};
-
 export const signOut = (history) => dispatch => {
 	dispatch({
 		type: C.USER_SIGN_OUT + C.START_LOAD
@@ -74,3 +67,31 @@ export const signOut = (history) => dispatch => {
 	})
 
 };
+
+export const getCurrentUserId = (uid) => dispatch => {
+	dispatch({
+		type: C.USER_SIGN_IN + C.FINISH_LOAD,
+		payload: uid
+	});
+};
+
+export const getUserInfo = (uid) => dispatch => {
+	dispatch({
+		type: C.GET_USER_INFO + C.START_LOAD,
+	});
+	db.getUserName(uid)
+		.then((snapshot) => {
+			const name = (snapshot.val() && snapshot.val().username) || 'Anonymous';
+			const email = snapshot.val().email;
+			dispatch({
+				type: C.GET_USER_INFO + C.FINISH_LOAD,
+				payload: {name, email}
+			});
+		}).catch(err => {
+		dispatch({
+			type   : C.GET_ERRORS,
+			payload: err
+		});
+	})
+};
+

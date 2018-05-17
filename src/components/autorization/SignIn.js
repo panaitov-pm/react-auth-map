@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Button, Form, Grid} from 'semantic-ui-react';
+import {Button, Form, Grid, Transition} from 'semantic-ui-react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 
@@ -13,7 +13,8 @@ class SignIn extends Component {
 			email    : '',
 			password: ''
 		},
-		errors: {}
+		errors: {},
+		visible: false,
 	};
 	componentWillReceiveProps(nextProps) {
 		if(nextProps.isAuth) {
@@ -32,6 +33,11 @@ class SignIn extends Component {
 		if(this.props.isAuth) {
 			this.props.history.push('/profile');
 		}
+		this.setState({visible: true});
+	}
+
+	componentWillUnmount() {
+		this.setState({visible: false});
 	}
 
 	handleChange = ({target}) => this.setState(({data, errors}) => ({
@@ -52,27 +58,34 @@ class SignIn extends Component {
 	};
 
 	render() {
-		const {data, errors} = this.state;
+		const {data, errors, visible} = this.state;
 		const {isLoading} = this.props;
 		return (
 			<Grid centered columns={2}>
 				<Grid.Column>
 					<Form onSubmit={this.handleSubmit}>
-						<Form.Field >
-							<label htmlFor="email">Email</label>
-							<input
-								name="email"
-								value={data.email}
-								onChange={this.handleChange}
-								type="email" />
-						</Form.Field>
-						<Form.Field >
-							<label htmlFor="password">Password</label>
-							<input
-								name="password"
-								onChange={this.handleChange}
-								type="password" />
-						</Form.Field>
+						<Transition.Group animation="fade" duration={1500}>
+							{
+								(visible) &&
+								<Form.Field>
+									<label htmlFor="email">Email</label>
+									<input
+										name="email"
+										value={data.email}
+										onChange={this.handleChange}
+										type="email" />
+								</Form.Field>
+							}
+						</Transition.Group>
+						<Transition.Group animation="fade" duration={1500}>
+							{
+								(visible) &&
+								<Form.Field>
+									<label htmlFor="password">Password</label>
+									<input name="password" value={data.password} onChange={this.handleChange} type="password" />
+								</Form.Field>
+							}
+						</Transition.Group>
 						<Button type="submit" primary loading={isLoading} disabled={isLoading} >Sign In</Button>
 						{!!errors && <InlineError text={errors.message} />}
 					</Form>

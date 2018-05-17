@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import DevTools from './DevTools';
 import {Provider} from 'react-redux';
 import App from '../app/App';

@@ -14,9 +14,12 @@ const Navigation = ({isAuth, signOut, history}) => {
 			<Menu.Item>
 				<NavLink exact to="/"><Image src={logo} size="tiny" /></NavLink>
 			</Menu.Item>
-			<Menu.Item>
-				<NavLink activeClassName="active" to="/profile">Profile</NavLink>
-			</Menu.Item>
+			{
+				isAuth
+					&& <Menu.Item>
+							<NavLink activeClassName="active" to="/profile">Profile</NavLink>
+						</Menu.Item>
+			}
 			{
 				isAuth
 				? <Menu.Menu position="right">
@@ -43,13 +46,13 @@ const Navigation = ({isAuth, signOut, history}) => {
 							</Button>
 						</Menu.Item>
 						<Menu.Item>
-							<Button animated basic color=" purple">
+							<Button animated basic color="purple">
 								<Button.Content visible>
 									<NavLink to="/sign-up">Sign Up</NavLink>
 								</Button.Content>
-								<Button.Content hidden purple>
+								<Button.Content hidden>
 									<NavLink to="/sign-up" >
-										<Icon name=" add user" size=" large" />
+										<Icon name="add user" size="large" />
 									</NavLink>
 								</Button.Content>
 							</Button>

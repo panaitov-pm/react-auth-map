@@ -9,14 +9,14 @@ import InlineError from '../layout/errorMessage';
 
 class SignUp extends Component {
 	state = {
-		data: {
-			name: '',
-			email: '',
-			password: '',
-			password2: '',
+		data   : {
+			name     : '',
+			email    : '',
+			password : '',
+			password2: ''
 		},
-		errors: {},
-		visible  : false
+		errors : {},
+		visible: false
 	};
 
 	componentWillReceiveProps(nextProps) {
@@ -37,29 +37,29 @@ class SignUp extends Component {
 
 
 	handleChange = ({target}) => this.setState(({data, errors}) => ({
-		data: {...data, [target.name]: target.value},
-		errors: {...errors, message: ''},
+		data  : {...data, [target.name]: target.value},
+		errors: {...errors, message: ''}
 	}));
 
 	handleSubmit = (e) => {
 		e.preventDefault();
 		const {userSignUp, history} = this.props;
 		const {data, errors} = this.state;
-		if(data.password !== data.password2) {
+		if (data.password !== data.password2) {
 			this.setState({
-				errors: {...errors, message: 'Password and Confirm password are not the same'},
+				errors: {...errors, message: 'Password and Confirm password are not the same'}
 			});
 			return;
 		}
-		if(data.name.trim() === '') {
+		if (data.name.trim() === '') {
 			this.setState({
-				errors: {...errors, message: 'Name field is empty'},
+				errors: {...errors, message: 'Name field is empty'}
 			});
 			return;
 		}
 		userSignUp(data.name, data.email, data.password, history);
 		this.setState({
-			errors: {...errors, message: ''},
+			errors: {...errors, message: ''}
 		});
 	};
 
@@ -75,24 +75,34 @@ class SignUp extends Component {
 						<Transition.Group animation="fade up" duration={1000}>
 							{
 								(visible) &&
-								<Form.Field >
+								<Form.Field>
 									<label htmlFor="name">Name</label>
 									<input name="name" value={data.name} onChange={this.handleChange} />
 								</Form.Field>
 							}
 						</Transition.Group>
-						<Form.Field >
-							<label htmlFor="email">Email</label>
-							<input name="email" value={data.email} onChange={this.handleChange} type="email" />
-						</Form.Field>
-						<Form.Field >
-							<label htmlFor="password">Password</label>
-							<input name="password" value={data.password} onChange={this.handleChange} type="password" />
-						</Form.Field>
+						<Transition.Group animation="fade" duration={1500}>
+							{
+								(visible) &&
+								<Form.Field>
+									<label htmlFor="email">Email</label>
+									<input name="email" value={data.email} onChange={this.handleChange} type="email" />
+								</Form.Field>
+							}
+						</Transition.Group>
+						<Transition.Group animation="fade" duration={1500}>
+							{
+								(visible) &&
+								<Form.Field>
+									<label htmlFor="password">Password</label>
+									<input name="password" value={data.password} onChange={this.handleChange} type="password" />
+								</Form.Field>
+							}
+						</Transition.Group>
 						<Transition.Group animation="fade down" duration={1000}>
 							{
 								(visible) &&
-								<Form.Field >
+								<Form.Field>
 									<label htmlFor="password2">Confirm Password</label>
 									<input
 										name="password2"
@@ -113,24 +123,25 @@ class SignUp extends Component {
 
 SignUp.propTypes = {
 	userSignUp: PropTypes.func.isRequired,
-	errors: PropTypes.object.isRequired,
-	isLoading: PropTypes.bool.isRequired,
-	isAuth: PropTypes.bool.isRequired,
+	errors    : PropTypes.object.isRequired,
+	isLoading : PropTypes.bool.isRequired,
+	isAuth    : PropTypes.bool.isRequired
 };
 
 SignUp.defaultProps = {
-	userSignUp: () => {},
-	errors: {},
-	isLoading: false,
-	isAuth: false,
+	userSignUp: () => {
+	},
+	errors    : {},
+	isLoading : false,
+	isAuth    : false
 };
 
 
 export default connect(
 	({auth, errors}) => ({
-		isAuth: auth.isAuth,
+		isAuth   : auth.isAuth,
 		isLoading: auth.isLoading,
-		errors: errors,
+		errors   : errors
 	}),
 	{userSignUp}
 )(withRouter(SignUp));
