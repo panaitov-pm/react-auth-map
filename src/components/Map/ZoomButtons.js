@@ -1,13 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types';
-import { Button } from 'semantic-ui-react';
+import {Button, Icon} from 'semantic-ui-react';
 
 
 const ZoomButtons = ({onZoomIn, onZoomOut}) => (
 	<Button.Group className="map__button">
-		<Button onClick={() => onZoomOut(1)} negative>-</Button>
+		<Button onClick={() => onZoomOut(1)} negative>
+			<Icon name='minus'/>
+		</Button>
 		<Button.Or />
-		<Button onClick={() => onZoomIn(1)} positive>+</Button>
+		<Button onClick={() => onZoomIn(1)} positive>
+			<Icon name='plus'/>
+		</Button>
 	</Button.Group>
 );
 

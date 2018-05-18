@@ -1,4 +1,5 @@
 import C from '../constants';
+import {setMarkersCurrentUser} from '../firebase/db';
 import {auth} from '../firebase/firebase';
 import * as db from '../firebase/db';
 
@@ -33,20 +34,20 @@ export const userSignIn = (email, password, history) => dispatch => {
 		type: C.USER_SIGN_IN + C.START_LOAD
 	});
 	auth.signInWithEmailAndPassword(email, password)
-		.then(({user}) => {
-			dispatch({
-				type: C.USER_SIGN_IN + C.FINISH_LOAD,
-				payload: user.uid
-			});
-			localStorage.setItem('userId', user.uid);
-			history.push('/profile');
-		})
-		.catch(err => {
-			dispatch({
-				type   : C.GET_ERRORS,
-				payload: err
-			});
-		})
+	.then(({user}) => {
+		dispatch({
+			type   : C.USER_SIGN_IN + C.FINISH_LOAD,
+			payload: user.uid
+		});
+		localStorage.setItem('userId', user.uid);
+		history.push('/profile');
+	})
+	.catch(err => {
+		dispatch({
+			type   : C.GET_ERRORS,
+			payload: err
+		});
+	})
 };
 
 export const signOut = (history) => dispatch => {
@@ -70,28 +71,50 @@ export const signOut = (history) => dispatch => {
 
 export const getCurrentUserId = (uid) => dispatch => {
 	dispatch({
-		type: C.USER_SIGN_IN + C.FINISH_LOAD,
+		type   : C.USER_SIGN_IN + C.FINISH_LOAD,
 		payload: uid
 	});
 };
 
 export const getUserInfo = (uid) => dispatch => {
 	dispatch({
-		type: C.GET_USER_INFO + C.START_LOAD,
+		type: C.GET_USER_INFO + C.START_LOAD
 	});
 	db.getUserName(uid)
-		.then((snapshot) => {
-			const name = (snapshot.val() && snapshot.val().username) || 'Anonymous';
-			const email = snapshot.val().email;
-			dispatch({
-				type: C.GET_USER_INFO + C.FINISH_LOAD,
-				payload: {name, email}
-			});
-		}).catch(err => {
+	.then((snapshot) => {
+		const name = (snapshot.val() && snapshot.val().username) || 'Anonymous';
+		const email = snapshot.val().email;
+		dispatch({
+			type   : C.GET_USER_INFO + C.FINISH_LOAD,
+			payload: {name, email}
+		});
+	}).catch(err => {
 		dispatch({
 			type   : C.GET_ERRORS,
 			payload: err
 		});
 	})
+};
+
+export const getMarker = (marker) => ({
+	type   : C.GET_MARKER,
+	payload: marker
+});
+
+export const saveMarkers = (uid, coordinates) => dispatch => {
+	dispatch({
+		type: C.SAVE_MARKERS + C.START_LOAD
+	});
+	setMarkersCurrentUser(uid, coordinates)
+	.then(() => {
+		dispatch({
+			type: C.SAVE_MARKERS + C.FINISH_LOAD
+		});
+	}).catch(err => {
+		dispatch({
+			type   : C.GET_ERRORS,
+			payload: err
+		});
+	});
 };
 
