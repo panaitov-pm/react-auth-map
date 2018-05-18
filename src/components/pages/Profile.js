@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import {Transition} from 'semantic-ui-react';
 import Spinner from 'react-spinkit';
 
-import Map from '../Map';
 import {getUserInfo} from '../../AC';
 
 import './Profile.scss'
@@ -32,7 +31,6 @@ class Profile extends Component {
 					}
 				</Transition.Group>
 			}
-			<Map />
 			</div>
 
 		);

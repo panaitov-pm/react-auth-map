@@ -1,9 +1,10 @@
 import React from 'react';
+import Map from '../Map/Map';
 
 const Main = props => {
 	return (
 		<div>
-			<h1>Main</h1>
+			<Map/>
 		</div>
 	);
 };

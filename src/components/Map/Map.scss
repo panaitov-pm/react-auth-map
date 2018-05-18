@@ -1,0 +1,12 @@
+.map {
+	position :relative;
+	&__container {
+		height :75vh;
+		width :100%;
+	}
+	&__button {
+		position :absolute;
+		top :20px;
+		left :20px;
+	}
+}
