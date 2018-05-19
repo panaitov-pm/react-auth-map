@@ -13,10 +13,11 @@
 .ui.button:not(.icon) > .icon:not(.button):not(.dropdown) {
 	margin :0;
 }
+
+.show-button,
 .save-button {
 	position   :fixed;
 	left       :0;
-	top        :30%;
 	transform  :translateX(-100%);
 	transition :transform 0.3s ease;
 	&.is-active {
@@ -37,4 +38,11 @@
 			}
 		}
 	}
+}
+
+.save-button {
+	top :30%;
+}
+.show-button {
+	top :50%;
 }

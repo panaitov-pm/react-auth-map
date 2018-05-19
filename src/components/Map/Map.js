@@ -5,30 +5,33 @@ import DG from '2gis-maps';
 
 import {getMarker} from '../../AC';
 import SaveButton from './SaveButton';
+import ShowButton from './ShowButton';
 import ZoomButtons from './ZoomButtons';
 import './Map.scss';
 
 class Map extends Component {
 	state = {
-		map: null,
-		coords: [],
-		markers: {},
+		map               : null,
+		markers           : {},
+		customMarker      : {},
+		isActiveShowButton: false
 	};
+
 	componentDidMount() {
 		const {getMarker} = this.props,
 			center = [46.47759, 30.74208],
-			markers = DG.featureGroup(),
+			markers = DG.layerGroup(),
 			customMarker = DG.icon({
-			iconUrl: '/images/map-marker.png',
-			iconSize: [40, 40],
-			iconAnchor: [17, 39],
-		}),
+				iconUrl   : '/images/map-marker.png',
+				iconSize  : [40, 40],
+				iconAnchor: [17, 39]
+			}),
 			map = DG.map(this.map, {
-			center,
-			'zoom': 13,
-			'boxZoom': false,
-			'zoomControl': false,
-		});
+				center,
+				'zoom'       : 13,
+				'boxZoom'    : false,
+				'zoomControl': false
+			});
 
 		map.locate({setView: true, watch: true})
 		.on('locationfound', function(e) {
@@ -42,24 +45,36 @@ class Map extends Component {
 
 			DG.marker(center).addTo(map);
 		});
-		this.setState({map});
+
+		this.setState({map, customMarker});
 
 		map.on('click', ({latlng}) => {
 			const coords = [latlng.lat.toFixed(4), latlng.lng.toFixed(4)];
-			DG.marker(
+			const marker = DG.marker(
 				coords,
 				{icon: customMarker}
-			).addTo(markers);
-			markers.addTo(map);
-			map.fitBounds(markers.getBounds());
+			);
+			markers.addLayer(marker).addTo(map);
+
 			getMarker(coords);
-		this.setState({markers});
+
+			this.setState({markers});
 		});
 	};
+
+	handleShowMarkers = () => {
+		const {markers, map, customMarker} = this.state;
+		const {coordinates} = this.props;
+		coordinates.map(coords => markers.addLayer(
+			DG.marker(coords, {icon: customMarker})
+		));
+		markers.addTo(map);
+	};
 	handleRemoveMarkers = () => {
-		const {markers, map} = this.state;
-		markers.removeFrom(map);
-	}
+		const {markers} = this.state;
+		const layers = markers.getLayers();
+		layers.map(layer => markers.removeLayer(layer));
+	};
 	handleMapZoomIn = (delta) => {
 		const {map} = this.state;
 		map.zoomIn(delta);
@@ -68,25 +83,41 @@ class Map extends Component {
 		const {map} = this.state;
 		map.zoomOut(delta);
 	};
+	handleToggleShowButton = (bool) => {
+		this.setState({isActiveShowButton: bool});
+	};
 
 	render() {
+		const {isActiveShowButton} = this.state;
 		return (
 			<div className="map">
 				<div className="map__container" ref={node => this.map = node}>
 				</div>
-				<ZoomButtons onZoomIn={this.handleMapZoomIn} onZoomOut={this.handleMapZoomOut}/>
-				<SaveButton map={this.state.map} onRemoveMarkers={this.handleRemoveMarkers} />
+				<ZoomButtons onZoomIn={this.handleMapZoomIn}
+				             onZoomOut={this.handleMapZoomOut} />
+				<SaveButton onRemoveMarkers={this.handleRemoveMarkers}
+				            onToggleShowButton={this.handleToggleShowButton} />
+				<ShowButton onShowMarkers={this.handleShowMarkers}
+				            onToggleShowButton={this.handleToggleShowButton}
+				            isActiveShowButton={isActiveShowButton} />
 			</div>
 		);
 	}
 }
 
 Map.propTypes = {
-    getMarker: PropTypes.func.isRequired,
+	getMarker  : PropTypes.func.isRequired,
+	coordinates: PropTypes.array.isRequired
+};
+
+Map.defaultProps = {
+	coordinates: []
 };
 
 
 export default connect(
-	null,
+	({user}) => ({
+		coordinates: user.coordinates
+	}),
 	{getMarker}
 )(Map);

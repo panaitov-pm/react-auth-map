@@ -7,22 +7,24 @@ import {saveMarkers} from '../../AC';
 class SaveButton extends Component {
 
 	handleSaveMarkers = () => {
-		const {coordinates, saveMarkers, uid, onRemoveMarkers} = this.props;
+		const {coordinates, saveMarkers, uid, onRemoveMarkers, onToggleShowButton} = this.props;
 		saveMarkers(uid, coordinates);
 		onRemoveMarkers();
+		onToggleShowButton(true);
 
 	};
+
 	render() {
 		const {coordinates, isLoading} = this.props,
 			coordinatesCount = coordinates.length;
-		let showButton = '';
+		let saveButton = '';
 
 		(coordinatesCount > 0)
-			? showButton = 'save-button is-active'
-			: showButton = 'save-button';
+			? saveButton = 'save-button is-active'
+			: saveButton = 'save-button';
 
 		return (
-			<div className={showButton}>
+			<div className={saveButton}>
 				<Button animated="vertical" color="purple" loading={isLoading}
 				        disabled={isLoading} onClick={this.handleSaveMarkers}>
 					<Button.Content visible>
@@ -41,17 +43,19 @@ class SaveButton extends Component {
 }
 
 SaveButton.propTypes = {
-	coordinates    : PropTypes.array.isRequired,
-	saveMarkers: PropTypes.func.isRequired,
-	isLoading  : PropTypes.bool.isRequired,
-	uid        : PropTypes.string.isRequired
+	coordinates       : PropTypes.array.isRequired,
+	saveMarkers       : PropTypes.func.isRequired,
+	onRemoveMarkers   : PropTypes.func.isRequired,
+	onToggleShowButton: PropTypes.func.isRequired,
+	isLoading         : PropTypes.bool.isRequired,
+	uid               : PropTypes.string.isRequired
 };
 
 export default connect(
 	({user, auth}) => ({
-		coordinates  : user.coordinates,
-		isLoading: user.isLoading,
-		uid      : auth.profile.uid
+		coordinates: user.coordinates,
+		isLoading  : user.isLoading,
+		uid        : auth.profile.uid
 	}),
 	{saveMarkers}
 )(SaveButton);
