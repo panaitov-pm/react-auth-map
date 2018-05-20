@@ -8,8 +8,14 @@ export const createUser = (id, username, email) => (
 );
 
 export const setMarkersCurrentUser = (id, coordinates) => (
-	db.ref(`users/${id}`).set({
-		coordinates
+	db.ref(`users/${id}`).update({
+		coordinates,
+	})
+);
+
+export const setAddressCurrentUser = (id, address) => (
+	db.ref(`users/${id}`).update({
+		address,
 	})
 );
 

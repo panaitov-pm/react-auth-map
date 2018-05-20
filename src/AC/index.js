@@ -1,11 +1,17 @@
+import axios from 'axios';
 import C from '../constants';
-import {setMarkersCurrentUser} from '../firebase/db';
 import {auth} from '../firebase/firebase';
 import * as db from '../firebase/db';
+
+const GEOCODE_ROOT_LINK = 'https://maps.googleapis.com/maps/api/geocode/';
 
 export const userSignUp = (username, email, password, history) => dispatch => {
 	dispatch({
 		type: C.USER_SIGN_UP + C.START_LOAD
+	});
+	dispatch({
+		type   : C.GET_ERRORS,
+		payload: {}
 	});
 	auth.createUserWithEmailAndPassword(email, password)
 	.then(({user}) => {
@@ -33,6 +39,10 @@ export const userSignIn = (email, password, history) => dispatch => {
 	dispatch({
 		type: C.USER_SIGN_IN + C.START_LOAD
 	});
+	dispatch({
+		type   : C.GET_ERRORS,
+		payload: {}
+	});
 	auth.signInWithEmailAndPassword(email, password)
 	.then(({user}) => {
 		dispatch({
@@ -53,6 +63,10 @@ export const userSignIn = (email, password, history) => dispatch => {
 export const signOut = (history) => dispatch => {
 	dispatch({
 		type: C.USER_SIGN_OUT + C.START_LOAD
+	});
+	dispatch({
+		type   : C.GET_ERRORS,
+		payload: {}
 	});
 	auth.signOut().then(() => {
 		dispatch({
@@ -82,11 +96,15 @@ export const getUserInfo = (uid) => dispatch => {
 	});
 	db.getUserName(uid)
 	.then((snapshot) => {
-		const name = (snapshot.val() && snapshot.val().username) || 'Anonymous';
+		const name = (snapshot.val() && snapshot.val().username) || '';
 		const email = snapshot.val().email;
+		const coordinates = (snapshot.val() && snapshot.val().coordinates) || [];
+		const address = (snapshot.val() && snapshot.val().address) || [];
 		dispatch({
 			type   : C.GET_USER_INFO + C.FINISH_LOAD,
-			payload: {name, email}
+			payload: {name, email},
+			coordinates,
+			address,
 		});
 	}).catch(err => {
 		dispatch({
@@ -96,16 +114,31 @@ export const getUserInfo = (uid) => dispatch => {
 	})
 };
 
-export const getMarker = (marker) => ({
-	type   : C.GET_MARKER,
-	payload: marker
-});
+export const getMarker = (coord) => dispatch => {
+	dispatch ({
+		type   : C.GET_MARKER,
+		payload: coord
+	});
+	axios.get(`${GEOCODE_ROOT_LINK}json?latlng=${coord[0]},${coord[1]}&key=AIzaSyD-wm7qCa7e-pkmWODOhjCah6zUlCKiHd0`)
+	.then(res => res.data.results[0].address_components)
+	.then(data =>
+		dispatch({
+			type: C.GET_ADDRESS,
+			payload: `${data[1].long_name}, ${data[0].long_name}`
+		}))
+	.catch(err => dispatch({
+		type   : C.GET_ERRORS,
+		payload: err
+	}));
+};
 
-export const saveMarkers = (uid, coordinates) => dispatch => {
+
+export const saveMarkers = (uid, coordinates, address) => dispatch => {
 	dispatch({
 		type: C.SAVE_MARKERS + C.START_LOAD
 	});
-	setMarkersCurrentUser(uid, coordinates)
+	db.setAddressCurrentUser(uid, address);
+	db.setMarkersCurrentUser(uid, coordinates)
 	.then(() => {
 		dispatch({
 			type: C.SAVE_MARKERS + C.FINISH_LOAD

@@ -1,19 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const errorMessage = ({text}) => {
+const ErrorMessage = ({text}) => {
 	return (
 		<div style={{color: 'red', marginTop: '1rem'}}>{text}</div>
 	)
 };
 
-errorMessage.propTypes = {
+ErrorMessage.propTypes = {
 	text: PropTypes.string.isRequired
 };
 
-errorMessage.defaultProps = {
+ErrorMessage.defaultProps = {
     text: '',
 };
 
 
-export default errorMessage;
+export default ErrorMessage;

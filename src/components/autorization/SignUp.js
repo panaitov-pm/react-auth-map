@@ -4,7 +4,7 @@ import {Button, Form, Grid, Transition} from 'semantic-ui-react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {userSignUp} from '../../AC';
-import InlineError from '../layout/errorMessage';
+import InlineError from '../layout/ErrorMessage';
 
 
 class SignUp extends Component {

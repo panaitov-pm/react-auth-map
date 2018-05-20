@@ -7,10 +7,20 @@ import {saveMarkers} from '../../AC';
 class SaveButton extends Component {
 
 	handleSaveMarkers = () => {
-		const {coordinates, saveMarkers, uid, onRemoveMarkers, onToggleShowButton} = this.props;
-		saveMarkers(uid, coordinates);
-		onRemoveMarkers();
-		onToggleShowButton(true);
+		const {
+			coordinates, address, saveMarkers, uid,
+			onRemoveMarkers, onToggleShowButton,
+			onToggleHasError
+		} = this.props;
+		if (uid.length === 0) {
+			onToggleHasError(true);
+			return false;
+		} else {
+			onToggleHasError(false);
+			saveMarkers(uid, coordinates, address);
+			onRemoveMarkers();
+			onToggleShowButton(true);
+		}
 
 	};
 
@@ -44,16 +54,23 @@ class SaveButton extends Component {
 
 SaveButton.propTypes = {
 	coordinates       : PropTypes.array.isRequired,
+	address           : PropTypes.array.isRequired,
 	saveMarkers       : PropTypes.func.isRequired,
 	onRemoveMarkers   : PropTypes.func.isRequired,
 	onToggleShowButton: PropTypes.func.isRequired,
 	isLoading         : PropTypes.bool.isRequired,
-	uid               : PropTypes.string.isRequired
+	uid               : PropTypes.string
 };
+
+SaveButton.defaultProps = {
+	uid: ''
+};
+
 
 export default connect(
 	({user, auth}) => ({
 		coordinates: user.coordinates,
+		address    : user.address,
 		isLoading  : user.isLoading,
 		uid        : auth.profile.uid
 	}),

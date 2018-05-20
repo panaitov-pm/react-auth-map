@@ -4,7 +4,7 @@ import {Button, Form, Grid, Transition} from 'semantic-ui-react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 
-import InlineError from '../layout/errorMessage';
+import InlineError from '../layout/ErrorMessage';
 import {userSignIn} from '../../AC';
 
 class SignIn extends Component {
@@ -112,7 +112,7 @@ export default connect(
 	({auth, errors}) => ({
 		isAuth: auth.isAuth,
 		isLoading: auth.isLoading,
-		errors: errors,
+		errors,
 	}),
 	{userSignIn}
 )(withRouter(SignIn));

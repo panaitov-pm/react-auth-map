@@ -7,6 +7,7 @@ import {getMarker} from '../../AC';
 import SaveButton from './SaveButton';
 import ShowButton from './ShowButton';
 import ZoomButtons from './ZoomButtons';
+import ErrorMessage from '../layout/ErrorMessage';
 import './Map.scss';
 
 class Map extends Component {
@@ -14,7 +15,8 @@ class Map extends Component {
 		map               : null,
 		markers           : {},
 		customMarker      : {},
-		isActiveShowButton: false
+		isActiveShowButton: false,
+		hasError: false,
 	};
 
 	componentDidMount() {
@@ -49,7 +51,7 @@ class Map extends Component {
 		this.setState({map, customMarker});
 
 		map.on('click', ({latlng}) => {
-			const coords = [latlng.lat.toFixed(4), latlng.lng.toFixed(4)];
+			const coords = [latlng.lat.toFixed(6), latlng.lng.toFixed(6)];
 			const marker = DG.marker(
 				coords,
 				{icon: customMarker}
@@ -86,9 +88,12 @@ class Map extends Component {
 	handleToggleShowButton = (bool) => {
 		this.setState({isActiveShowButton: bool});
 	};
+	handleToggleHasError = (bool) => {
+		this.setState({hasError: bool});
+	};
 
 	render() {
-		const {isActiveShowButton} = this.state;
+		const {isActiveShowButton, hasError} = this.state;
 		return (
 			<div className="map">
 				<div className="map__container" ref={node => this.map = node}>
@@ -96,10 +101,12 @@ class Map extends Component {
 				<ZoomButtons onZoomIn={this.handleMapZoomIn}
 				             onZoomOut={this.handleMapZoomOut} />
 				<SaveButton onRemoveMarkers={this.handleRemoveMarkers}
-				            onToggleShowButton={this.handleToggleShowButton} />
+				            onToggleShowButton={this.handleToggleShowButton}
+				            onToggleHasError={this.handleToggleHasError} />
 				<ShowButton onShowMarkers={this.handleShowMarkers}
 				            onToggleShowButton={this.handleToggleShowButton}
 				            isActiveShowButton={isActiveShowButton} />
+				{hasError && <ErrorMessage text="You need to SignIn for saving markers"/>}
 			</div>
 		);
 	}
@@ -116,8 +123,8 @@ Map.defaultProps = {
 
 
 export default connect(
-	({user}) => ({
-		coordinates: user.coordinates
+	({user, errors}) => ({
+		coordinates: user.coordinates,
 	}),
 	{getMarker}
 )(Map);

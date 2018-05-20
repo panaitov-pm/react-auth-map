@@ -22,6 +22,12 @@ const Navigation = ({isAuth, signOut, history}) => {
 			}
 			{
 				isAuth
+				&& <Menu.Item>
+					<NavLink exact to="/">Map</NavLink>
+				</Menu.Item>
+			}
+			{
+				isAuth
 				? <Menu.Menu position="right">
 						<Menu.Item>
 							<Button animated basic color="blue" onClick={() =>signOut(history)}>

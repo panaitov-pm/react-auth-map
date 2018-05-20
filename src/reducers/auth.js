@@ -11,7 +11,7 @@ export default (state = defaultState, action) => {
 
 	switch (type) {
 		case C.USER_SIGN_IN + C.START_LOAD:
-			return {...state, isLoading: true};
+			return {...state, isLoading: true, payload: ''};
 		case C.USER_SIGN_IN + C.FINISH_LOAD:
 			return {...state, profile: {...state.profile, uid: payload}, isAuth: true, isLoading: false};
 		case C.USER_SIGN_UP + C.START_LOAD:
