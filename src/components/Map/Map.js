@@ -62,6 +62,7 @@ class Map extends Component {
 
 			this.setState({markers});
 		});
+
 	};
 
 	handleShowMarkers = () => {
@@ -74,7 +75,7 @@ class Map extends Component {
 	};
 	handleRemoveMarkers = () => {
 		const {markers} = this.state;
-		const layers = markers.getLayers();
+		const layers = (markers.getLayers().length > 0) ? markers.getLayers(): [];
 		layers.map(layer => markers.removeLayer(layer));
 	};
 	handleMapZoomIn = (delta) => {

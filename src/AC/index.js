@@ -3,7 +3,8 @@ import C from '../constants';
 import {auth} from '../firebase/firebase';
 import * as db from '../firebase/db';
 
-const GEOCODE_ROOT_LINK = 'https://maps.googleapis.com/maps/api/geocode/';
+const GOOGLE_API_ROOT_LINK = 'https://maps.googleapis.com/maps/api/';
+const GOOGLE_API_KEY = 'AIzaSyBNrCygq-xbcX7aBCJAXzLYvDwDO4zQG7w';
 
 export const userSignUp = (username, email, password, history) => dispatch => {
 	dispatch({
@@ -104,7 +105,7 @@ export const getUserInfo = (uid) => dispatch => {
 			type   : C.GET_USER_INFO + C.FINISH_LOAD,
 			payload: {name, email},
 			coordinates,
-			address,
+			address
 		});
 	}).catch(err => {
 		dispatch({
@@ -115,15 +116,15 @@ export const getUserInfo = (uid) => dispatch => {
 };
 
 export const getMarker = (coord) => dispatch => {
-	dispatch ({
+	dispatch({
 		type   : C.GET_MARKER,
 		payload: coord
 	});
-	axios.get(`${GEOCODE_ROOT_LINK}json?latlng=${coord[0]},${coord[1]}&key=AIzaSyD-wm7qCa7e-pkmWODOhjCah6zUlCKiHd0`)
+	axios.get(`${GOOGLE_API_ROOT_LINK}geocode/json?latlng=${coord[0]},${coord[1]}&key=${GOOGLE_API_KEY}`)
 	.then(res => res.data.results[0].address_components)
 	.then(data =>
 		dispatch({
-			type: C.GET_ADDRESS,
+			type   : C.GET_ADDRESS,
 			payload: `${data[1].long_name}, ${data[0].long_name}`
 		}))
 	.catch(err => dispatch({
@@ -131,7 +132,6 @@ export const getMarker = (coord) => dispatch => {
 		payload: err
 	}));
 };
-
 
 export const saveMarkers = (uid, coordinates, address) => dispatch => {
 	dispatch({
@@ -150,4 +150,5 @@ export const saveMarkers = (uid, coordinates, address) => dispatch => {
 		});
 	});
 };
+
 
