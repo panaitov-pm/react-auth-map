@@ -56,10 +56,11 @@ class Profile extends Component {
 }
 
 Profile.propTypes = {
-	isLoading: PropTypes.bool.isRequired,
-	user     : PropTypes.object,
-	uid      : PropTypes.string.isRequired,
-	address  : PropTypes.array.isRequired
+  address: PropTypes.array.isRequired,
+  getUserInfo: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  uid: PropTypes.string.isRequired,
+  user: PropTypes.object
 };
 
 Profile.defaultTypes = {

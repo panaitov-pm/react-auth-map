@@ -8,8 +8,9 @@ import SaveButton from './SaveButton';
 import ShowButton from './ShowButton';
 import ZoomButtons from './ZoomButtons';
 import ErrorMessage from '../layout/ErrorMessage';
-import './Map.scss';
 import CategoryList from './CategoryList';
+
+import './Map.scss';
 
 class Map extends Component {
 	state = {

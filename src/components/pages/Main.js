@@ -1,7 +1,7 @@
 import React, {Fragment} from 'react';
 import Map from '../Map/Map';
 
-const Main = props => {
+const Main = () => {
 	return (
 		<Fragment>
 			<Map/>
