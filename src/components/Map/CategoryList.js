@@ -29,9 +29,11 @@ const defaultCategories = [
 
 class CategoryList extends Component {
 
-	handleGetCategory = (name) => {
-		const {getCategoryMarkers, onShowCategoryMarkers} = this.props;
-		getCategoryMarkers(name);
+	handleGetCategory = (name, icon) => {
+		const {getCategoryMarkers, onSetCategoryIcon} = this.props;
+			getCategoryMarkers(name);
+		onSetCategoryIcon(icon);
+
 	};
 	render() {
 		return (
@@ -40,7 +42,7 @@ class CategoryList extends Component {
 					{
 						defaultCategories.map(category => (
 							<List.Item key={id()}>
-								<button className="categories__button" title={category.name} onClick={()=> this.handleGetCategory(category.name)}>
+								<button className="categories__button" title={category.name} onClick={()=> this.handleGetCategory(category.name, category.icon)}>
 									<List.Icon name={category.icon} />
 									{category.name}
 								</button>
@@ -54,7 +56,8 @@ class CategoryList extends Component {
 }
 
 CategoryList.propTypes = {
-	getCategoryMarkers: PropTypes.func.isRequired,
+  getCategoryMarkers: PropTypes.func.isRequired,
+  onSetCategoryIcon: PropTypes.func.isRequired
 };
 
 export default connect(

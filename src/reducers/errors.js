@@ -5,6 +5,7 @@ export default (state = {}, action) => {
 
 	switch (type) {
 		case C.GET_ERRORS:
+		case C.REMOVE_ERRORS:
 			return payload;
 		default:
 			return state;

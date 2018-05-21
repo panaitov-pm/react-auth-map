@@ -9,15 +9,16 @@ import {userSignIn} from '../../AC';
 
 class SignIn extends Component {
 	state = {
-		data  : {
-			email    : '',
+		data   : {
+			email   : '',
 			password: ''
 		},
-		errors: {},
-		visible: false,
+		errors : {},
+		visible: false
 	};
+
 	componentWillReceiveProps(nextProps) {
-		if(nextProps.isAuth) {
+		if (nextProps.isAuth) {
 			this.props.history.push('/profile');
 			this.setState({
 				errors: {...nextProps.errors, message: ''}
@@ -30,14 +31,21 @@ class SignIn extends Component {
 	}
 
 	componentDidMount() {
-		if(this.props.isAuth) {
-			this.props.history.push('/profile');
+		const {isAuth, email, history} = this.props;
+		if (isAuth) {
+			history.push('/profile');
 		}
-		this.setState({visible: true});
+		this.setState({
+			visible: true,
+			data   : {...this.state.data, email: email}
+		});
 	}
 
 	componentWillUnmount() {
-		this.setState({visible: false});
+		this.setState({
+			visible: false,
+			data   : {...this.state.data, email: ''}
+		});
 	}
 
 	handleChange = ({target}) => this.setState(({data, errors}) => ({
@@ -86,7 +94,7 @@ class SignIn extends Component {
 								</Form.Field>
 							}
 						</Transition.Group>
-						<Button type="submit" primary loading={isLoading} disabled={isLoading} >Sign In</Button>
+						<Button type="submit" primary loading={isLoading} disabled={isLoading}>Sign In</Button>
 						{!!errors && <InlineError text={errors.message} />}
 					</Form>
 				</Grid.Column>
@@ -96,23 +104,26 @@ class SignIn extends Component {
 }
 
 SignIn.propTypes = {
-	isAuth: PropTypes.bool.isRequired,
+	isAuth   : PropTypes.bool.isRequired,
 	isLoading: PropTypes.bool.isRequired,
-	errors: PropTypes.object,
+	errors   : PropTypes.object,
+	email    : PropTypes.string.isRequired
 };
 
 SignIn.defaultProps = {
-	isAuth: false,
+	isAuth   : false,
 	isLoading: false,
-	errors: {}
+	errors   : {},
+	email    : ''
 };
 
 
 export default connect(
-	({auth, errors}) => ({
-		isAuth: auth.isAuth,
+	({auth, errors, user}) => ({
+		isAuth   : auth.isAuth,
 		isLoading: auth.isLoading,
 		errors,
+		email    : user.data.email
 	}),
 	{userSignIn}
 )(withRouter(SignIn));

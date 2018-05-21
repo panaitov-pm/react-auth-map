@@ -5,14 +5,14 @@ import * as db from '../firebase/db';
 
 const GOOGLE_API_ROOT_LINK = 'https://maps.googleapis.com/maps/api/';
 const DG_API_ROOT_LINK = 'https://catalog.api.2gis.ru/3.0/';
-const GOOGLE_API_KEY = 'AIzaSyBNrCygq-xbcX7aBCJAXzLYvDwDO4zQG7w';
+const GOOGLE_API_KEY = 'AIzaSyD-wm7qCa7e-pkmWODOhjCah6zUlCKiHd0&libraries';
 
 export const userSignUp = (username, email, password, history) => dispatch => {
 	dispatch({
 		type: C.USER_SIGN_UP + C.START_LOAD
 	});
 	dispatch({
-		type   : C.GET_ERRORS,
+		type   : C.REMOVE_ERRORS,
 		payload: {}
 	});
 	auth.createUserWithEmailAndPassword(email, password)
@@ -20,7 +20,8 @@ export const userSignUp = (username, email, password, history) => dispatch => {
 		db.createUser(user.uid, username, email)
 		.then(() => {
 			dispatch({
-				type: C.USER_SIGN_UP + C.FINISH_LOAD
+				type: C.USER_SIGN_UP + C.FINISH_LOAD,
+				payload: email
 			});
 			history.push('/sign-in');
 		}).catch(err => {
@@ -42,7 +43,7 @@ export const userSignIn = (email, password, history) => dispatch => {
 		type: C.USER_SIGN_IN + C.START_LOAD
 	});
 	dispatch({
-		type   : C.GET_ERRORS,
+		type   : C.REMOVE_ERRORS,
 		payload: {}
 	});
 	auth.signInWithEmailAndPassword(email, password)
@@ -67,7 +68,7 @@ export const signOut = (history) => dispatch => {
 		type: C.USER_SIGN_OUT + C.START_LOAD
 	});
 	dispatch({
-		type   : C.GET_ERRORS,
+		type   : C.REMOVE_ERRORS,
 		payload: {}
 	});
 	auth.signOut().then(() => {

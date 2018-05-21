@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import DG from '2gis-maps';
 
-import { getCategoryMarkers, getMarker } from '../../AC';
+import {getCategoryMarkers, getMarker} from '../../AC';
 import SaveButton from './SaveButton';
 import ShowButton from './ShowButton';
 import ZoomButtons from './ZoomButtons';
@@ -15,9 +15,12 @@ class Map extends Component {
 	state = {
 		map               : null,
 		markers           : {},
+		markersOfCategory : {},
+		categoryIcon      : '',
 		customMarker      : {},
 		isActiveShowButton: false,
-		hasError: false,
+		hasError          : false
+
 	};
 
 	componentDidMount() {
@@ -66,6 +69,24 @@ class Map extends Component {
 
 	};
 
+	componentWillReceiveProps(nextProps) {
+		const {categoryMarkers} = this.props;
+		if (categoryMarkers.length !== nextProps.categoryMarkers.length) {
+			const markers = nextProps.categoryMarkers;
+			if (categoryMarkers.length > 0) {
+				this.handleRemoveCategoryMarkers();
+			}
+			this.handleShowCategoryMarkers(markers);
+		}
+	}
+
+
+	componentWillUnmount() {
+		const {map} = this.state;
+		map.remove();
+	}
+
+
 	handleShowMarkers = () => {
 		const {markers, map, customMarker} = this.state;
 		const {coordinates} = this.props;
@@ -76,17 +97,97 @@ class Map extends Component {
 	};
 	handleRemoveMarkers = () => {
 		const {markers} = this.state;
-		const layers = (markers.getLayers().length > 0) ? markers.getLayers(): [];
+		const layers = (markers.getLayers().length > 0) ? markers.getLayers() : [];
 		layers.map(layer => markers.removeLayer(layer));
 	};
-	handleShowCategoryMarkers = () => {
-		const {markers, map, customMarker} = this.state;
-		const {categoryMarkers} = this.props;
-		console.log('---', categoryMarkers);
-		categoryMarkers.map(marker => markers.addLayer(
-			DG.marker([marker.lon, marker.lng], {icon: customMarker})
-		));
-		markers.addTo(map);
+	handleRemoveCategoryMarkers = () => {
+		const {markersOfCategory} = this.state;
+
+		if (markersOfCategory !== 0) {
+			if (markersOfCategory.getLayers().length > 0) {
+				let layers = markersOfCategory.getLayers();
+
+				layers.map(layer => markersOfCategory.removeLayer(layer));
+			}
+		}
+
+
+	};
+	handleShowCategoryMarkers = (categoryMarkers) => {
+		const {map, categoryIcon} = this.state;
+		const hospital = DG.icon({
+				iconUrl   : '/images/hospital_marker.png',
+				iconSize  : [40, 40],
+				iconAnchor: [17, 39]
+			}),
+			car = DG.icon({
+				iconUrl   : '/images/gas_station_marker.png',
+				iconSize  : [40, 40],
+				iconAnchor: [17, 39]
+			}),
+			graduation = DG.icon({
+				iconUrl   : '/images/graduation_marker.png',
+				iconSize  : [40, 40],
+				iconAnchor: [17, 39]
+			}),
+			restaurant = DG.icon({
+				iconUrl   : '/images/restaurant_marker.png',
+				iconSize  : [40, 40],
+				iconAnchor: [17, 39]
+			}),
+			markersOfCategory = DG.layerGroup();
+
+		switch (categoryIcon) {
+			case 'hospital' :
+				categoryMarkers.map(item => {
+					let marker = DG.marker(
+						[item.lat, item.lon],
+						{icon: hospital}
+					);
+					return markersOfCategory.addLayer(marker);
+				});
+				break;
+			case 'car' :
+				categoryMarkers.map(item => {
+					let marker = DG.marker(
+						[item.lat, item.lon],
+						{icon: car}
+					);
+					return markersOfCategory.addLayer(marker);
+				});
+				break;
+			case 'graduation' :
+				categoryMarkers.map(item => {
+					let marker = DG.marker(
+						[item.lat, item.lon],
+						{icon: graduation}
+					);
+					return markersOfCategory.addLayer(marker);
+				});
+				break;
+			case 'food' :
+				categoryMarkers.map(item => {
+					let marker = DG.marker(
+						[item.lat, item.lon],
+						{icon: restaurant}
+					);
+					return markersOfCategory.addLayer(marker);
+				});
+				break;
+			default:
+				categoryMarkers.map(item => {
+					let marker = DG.marker(
+						[item.lat, item.lon]
+					);
+					return markersOfCategory.addLayer(marker);
+				});
+		}
+
+		this.setState({markersOfCategory});
+		map.setZoom(15);
+		setTimeout(function() {
+			markersOfCategory.addTo(map);
+		}, 300);
 	};
 	handleMapZoomIn = (delta) => {
 		const {map} = this.state;
@@ -102,12 +203,16 @@ class Map extends Component {
 	handleToggleHasError = (bool) => {
 		this.setState({hasError: bool});
 	};
+	handleSetCategoryIcon = (category) => {
+		this.setState({categoryIcon: category});
+	};
 
 	render() {
 		const {isActiveShowButton, hasError} = this.state;
 		return (
 			<div className="map-wrap">
-				<CategoryList onShowCategoryMarkers={this.handleShowCategoryMarkers} />
+				<CategoryList onShowCategoryMarkers={this.handleShowCategoryMarkers}
+				              onSetCategoryIcon={this.handleSetCategoryIcon} />
 				<div className="map">
 					<div className="map__container" ref={node => this.map = node}>
 					</div>
@@ -119,7 +224,7 @@ class Map extends Component {
 					<ShowButton onShowMarkers={this.handleShowMarkers}
 					            onToggleShowButton={this.handleToggleShowButton}
 					            isActiveShowButton={isActiveShowButton} />
-					{hasError && <ErrorMessage text="You need to SignIn for saving markers"/>}
+					{hasError && <ErrorMessage text="You need to SignIn for saving markers" />}
 				</div>
 			</div>
 		);
@@ -127,10 +232,10 @@ class Map extends Component {
 }
 
 Map.propTypes = {
-	getMarker  : PropTypes.func.isRequired,
-	coordinates: PropTypes.array.isRequired,
-	categoryMarkers: PropTypes.object,
-	isLoading: PropTypes.bool.isRequired,
+	getMarker      : PropTypes.func.isRequired,
+	coordinates    : PropTypes.array.isRequired,
+	categoryMarkers: PropTypes.array,
+	isLoading      : PropTypes.bool.isRequired
 };
 
 Map.defaultProps = {
@@ -139,10 +244,10 @@ Map.defaultProps = {
 
 
 export default connect(
-	({user, errors, categoryMarkers}) => ({
-		coordinates: user.coordinates,
-		isLoading: categoryMarkers.isLoading,
-		categoryMarkers
+	({user, categoryMarkers}) => ({
+		coordinates    : user.coordinates,
+		isLoading      : categoryMarkers.isLoading,
+		categoryMarkers: categoryMarkers.categoryMarkers
 	}),
 	{getMarker, getCategoryMarkers}
 )(Map);

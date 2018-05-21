@@ -27,8 +27,14 @@ export default (state = defaultState, action) => {
 			return {...state, address: [...state.address, payload]};
 		case C.SAVE_MARKERS + C.FINISH_LOAD:
 			return {...state, isLoading: false};
+		case C.USER_SIGN_UP + C.FINISH_LOAD:
+			return {...state, data: {...state.data, email:payload}};
+			case C.USER_SIGN_OUT + C.FINISH_LOAD:
+			return {...state, data: {...state.data, email: ''}};
 		case C.GET_ERRORS:
 			return {...state, isLoading: false};
+			case C.REMOVE_ERRORS:
+			return {...state};
 		default:
 			return state;
 	}
