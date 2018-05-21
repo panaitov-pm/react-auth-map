@@ -4,6 +4,7 @@ import {auth} from '../firebase/firebase';
 import * as db from '../firebase/db';
 
 const GOOGLE_API_ROOT_LINK = 'https://maps.googleapis.com/maps/api/';
+const DG_API_ROOT_LINK = 'https://catalog.api.2gis.ru/3.0/';
 const GOOGLE_API_KEY = 'AIzaSyBNrCygq-xbcX7aBCJAXzLYvDwDO4zQG7w';
 
 export const userSignUp = (username, email, password, history) => dispatch => {
@@ -126,6 +127,25 @@ export const getMarker = (coord) => dispatch => {
 		dispatch({
 			type   : C.GET_ADDRESS,
 			payload: `${data[1].long_name}, ${data[0].long_name}`
+		}))
+	.catch(err => dispatch({
+		type   : C.GET_ERRORS,
+		payload: err
+	}));
+};
+
+export const getCategoryMarkers = (category) => dispatch => {
+	dispatch({
+		type   : C.GET_CATEGORY_MARKERS + C.START_LOAD,
+	});
+	axios.get(`${DG_API_ROOT_LINK}markers?page=1&page_size=10000&q=${category}&region_id=14&key=rutnpt3272`)
+	.then(res => res.data)
+	.then(data => data.result)
+	.then(result => result.items)
+	.then(items =>
+		dispatch({
+			type   : C.GET_CATEGORY_MARKERS + C.FINISH_LOAD,
+			payload: items
 		}))
 	.catch(err => dispatch({
 		type   : C.GET_ERRORS,

@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import {generate as id} from 'shortid';
-
+import PropTypes from 'prop-types';
 import {List} from 'semantic-ui-react';
+import { connect } from 'react-redux';
+import { getCategoryMarkers } from '../../AC';
 
 
 const defaultCategories = [
@@ -28,7 +30,8 @@ const defaultCategories = [
 class CategoryList extends Component {
 
 	handleGetCategory = (name) => {
-
+		const {getCategoryMarkers, onShowCategoryMarkers} = this.props;
+		getCategoryMarkers(name);
 	};
 	render() {
 		return (
@@ -51,6 +54,10 @@ class CategoryList extends Component {
 }
 
 CategoryList.propTypes = {
+	getCategoryMarkers: PropTypes.func.isRequired,
 };
 
-export default CategoryList;
+export default connect(
+	null,
+	{getCategoryMarkers}
+)(CategoryList);

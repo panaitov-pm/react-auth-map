@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import DG from '2gis-maps';
 
-import {getMarker} from '../../AC';
+import { getCategoryMarkers, getMarker } from '../../AC';
 import SaveButton from './SaveButton';
 import ShowButton from './ShowButton';
 import ZoomButtons from './ZoomButtons';
 import ErrorMessage from '../layout/ErrorMessage';
 import './Map.scss';
+import CategoryList from './CategoryList';
 
 class Map extends Component {
 	state = {
@@ -78,6 +79,15 @@ class Map extends Component {
 		const layers = (markers.getLayers().length > 0) ? markers.getLayers(): [];
 		layers.map(layer => markers.removeLayer(layer));
 	};
+	handleShowCategoryMarkers = () => {
+		const {markers, map, customMarker} = this.state;
+		const {categoryMarkers} = this.props;
+		console.log('---', categoryMarkers);
+		categoryMarkers.map(marker => markers.addLayer(
+			DG.marker([marker.lon, marker.lng], {icon: customMarker})
+		));
+		markers.addTo(map);
+	};
 	handleMapZoomIn = (delta) => {
 		const {map} = this.state;
 		map.zoomIn(delta);
@@ -96,18 +106,21 @@ class Map extends Component {
 	render() {
 		const {isActiveShowButton, hasError} = this.state;
 		return (
-			<div className="map">
-				<div className="map__container" ref={node => this.map = node}>
+			<div className="map-wrap">
+				<CategoryList onShowCategoryMarkers={this.handleShowCategoryMarkers} />
+				<div className="map">
+					<div className="map__container" ref={node => this.map = node}>
+					</div>
+					<ZoomButtons onZoomIn={this.handleMapZoomIn}
+					             onZoomOut={this.handleMapZoomOut} />
+					<SaveButton onRemoveMarkers={this.handleRemoveMarkers}
+					            onToggleShowButton={this.handleToggleShowButton}
+					            onToggleHasError={this.handleToggleHasError} />
+					<ShowButton onShowMarkers={this.handleShowMarkers}
+					            onToggleShowButton={this.handleToggleShowButton}
+					            isActiveShowButton={isActiveShowButton} />
+					{hasError && <ErrorMessage text="You need to SignIn for saving markers"/>}
 				</div>
-				<ZoomButtons onZoomIn={this.handleMapZoomIn}
-				             onZoomOut={this.handleMapZoomOut} />
-				<SaveButton onRemoveMarkers={this.handleRemoveMarkers}
-				            onToggleShowButton={this.handleToggleShowButton}
-				            onToggleHasError={this.handleToggleHasError} />
-				<ShowButton onShowMarkers={this.handleShowMarkers}
-				            onToggleShowButton={this.handleToggleShowButton}
-				            isActiveShowButton={isActiveShowButton} />
-				{hasError && <ErrorMessage text="You need to SignIn for saving markers"/>}
 			</div>
 		);
 	}
@@ -115,7 +128,9 @@ class Map extends Component {
 
 Map.propTypes = {
 	getMarker  : PropTypes.func.isRequired,
-	coordinates: PropTypes.array.isRequired
+	coordinates: PropTypes.array.isRequired,
+	categoryMarkers: PropTypes.object,
+	isLoading: PropTypes.bool.isRequired,
 };
 
 Map.defaultProps = {
@@ -124,8 +139,10 @@ Map.defaultProps = {
 
 
 export default connect(
-	({user, errors}) => ({
+	({user, errors, categoryMarkers}) => ({
 		coordinates: user.coordinates,
+		isLoading: categoryMarkers.isLoading,
+		categoryMarkers
 	}),
-	{getMarker}
+	{getMarker, getCategoryMarkers}
 )(Map);

@@ -1,16 +1,12 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import Map from '../Map/Map';
-import CategoryList from '../Map/CategoryList';
 
 const Main = props => {
 	return (
-		<div className="main">
-			<CategoryList />
+		<Fragment>
 			<Map/>
-		</div>
+		</Fragment>
 	);
 };
-
-Main.propTypes = {};
 
 export default Main;
